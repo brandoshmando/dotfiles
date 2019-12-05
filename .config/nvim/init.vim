@@ -1,4 +1,5 @@
 set nocompatible            " disable compatibility to old-time vi
+set number
 set showmatch               " show matching brackets.
 set ignorecase              " case insensitive matching
 set mouse=v                 " middle-click paste with mouse
