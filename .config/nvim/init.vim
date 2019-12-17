@@ -27,6 +27,7 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'vim-scripts/scrollfix'
 Plug 'Raimondi/delimitMate'
+Plug 'tpope/vim-surround'
 
 call plug#end()
 
@@ -60,11 +61,11 @@ let g:netrw_winsize = 15
 
 noremap <C-s> :w<Enter>
 inoremap <C-s> <Esc>:w<Enter>
-" noremap <C-S> :wq<Enter>
-" inoremap <C-S> <Esc>:wq<Enter>
 noremap <C-h> b
 noremap <C-l> w
 noremap <C-z> :u<Enter>
 inoremap <C-z> <Esc>:u<Enter>i
 noremap <C-y> :redo<Enter>
 inoremap <C-y> <Esc>:redo<Enter>i
+noremap <C-j> <Shift-l>
+noremap <C-k> <Shift-h>
