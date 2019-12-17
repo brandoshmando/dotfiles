@@ -71,3 +71,6 @@ noremap <C-j> :$<Enter>
 noremap <C-k> gg
 inoremap <C-j> <Esc>:$<Enter>i
 inoremap <C-k> <Esc>ggi
+noremap <C-c> y
+noremap <C-x> d
+noremap <C-p> p
