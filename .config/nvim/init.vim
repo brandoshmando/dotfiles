@@ -57,8 +57,8 @@ noremap <C-z> :u<Enter>
 inoremap <C-z> <Esc>:u<Enter>i
 noremap <C-y> :redo<Enter>
 inoremap <C-y> <Esc>:redo<Enter>i
-noremap <C-j> :$<Enter>
-noremap <C-k> gg
+noremap jj :$<Enter>
+noremap kk gg
 noremap <C-c> y
 noremap <C-x> d
 noremap <C-v> p
