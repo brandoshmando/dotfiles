@@ -1,0 +1,53 @@
+{
+      "atomKeymap.promptV3Features": true,
+      "editor.multiCursorModifier": "ctrlCmd",
+      "editor.formatOnPaste": true,
+      "workbench.colorTheme": "Monokai Classic",
+      "workbench.iconTheme": "Monokai Classic Icons",
+      "editor.fontFamily": "Roboto Mono ExtraLite, Roboto Mono Thin, Roboto Mono",
+      "editor.codeLens": true,
+      "editor.cursorBlinking": "smooth",
+      "go.coverOnSingleTest": true,
+      "go.coverOnSingleTestFile": true,
+      "go.useLanguageServer": true,
+      "ui.completion.usePlaceholders": true,
+      "go.gopath": "",
+      "editor.minimap.enabled": false,
+      "editor.renderWhitespace": "boundary",
+      "explorer.confirmDelete": false,
+      "explorer.confirmDragAndDrop": false,
+      "files.exclude": {
+          "**/.git": true,
+          "**/.svn": true,
+          "**/.hg": true,
+          "**/CVS": true,
+          "**/.DS_Store": true,
+          "**/_quarantine": true
+      },
+      "gopls": {},
+      "go.toolsManagement.autoUpdate": true,
+      "go.coverOnSave": true,
+      "go.lintTool": "golangci-lint",
+      "go.testOnSave": true,
+      "go.testTimeout": "10s",
+      "go.testFlags": [
+          "-v"
+      ],
+      "go.lintOnSave": "off",
+      "security.workspace.trust.untrustedFiles": "open",
+      "[sql]": {
+          "editor.defaultFormatter": "mtxr.sqltools"
+      },
+      "sql-formatter.dialect": "pl/sql",
+      "[python]": {
+          "editor.formatOnType": true
+      },
+      "workbench.startupEditor": "none",
+      "editor.formatOnSave": true,
+      "[go]": {
+          "editor.formatOnSave": true
+      },
+      "cue.formatTool": "cue fmt",
+      "git.openRepositoryInParentFolders": "never",
+      "redhat.telemetry.enabled": false
+  }
