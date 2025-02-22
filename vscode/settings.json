@@ -1,0 +1,70 @@
+{
+    "atomKeymap.promptV3Features": true,
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.formatOnPaste": true,
+    "workbench.colorTheme": "Monokai Classic",
+    "workbench.iconTheme": "Monokai Classic Icons",
+    "editor.fontFamily": "Roboto Mono ExtraLite, Roboto Mono Thin, Roboto Mono",
+    "editor.codeLens": true,
+    "editor.cursorBlinking": "smooth",
+    "go.coverOnSingleTest": true,
+    "go.coverOnSingleTestFile": true,
+    // "go.gocodeAutoBuild": true,
+    // "go.useCodeSnippetsOnFunctionSuggest": true,
+    // "go.useCodeSnippetsOnFunctionSuggestWithoutType": true,
+    "go.useLanguageServer": true,
+    "ui.completion.usePlaceholders": true,
+    "go.gopath": "",
+    "editor.minimap.enabled": false,
+    "editor.renderWhitespace": "boundary",
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/_quarantine": true
+    },
+    "gopls": {},
+    "go.toolsManagement.autoUpdate": true,
+    "go.coverOnSave": true,
+    "go.lintTool": "golangci-lint",
+    "go.testOnSave": true,
+    "go.testTimeout": "10s",
+    "go.testFlags": [
+        "-v"
+    ],
+    "go.lintOnSave": "off",
+    "security.workspace.trust.untrustedFiles": "open",
+    "[sql]": {
+        "editor.defaultFormatter": "mtxr.sqltools"
+    },
+    "sql-formatter.dialect": "pl/sql",
+    "[python]": {
+        "editor.formatOnType": true
+    },
+    "workbench.startupEditor": "none",
+    "editor.formatOnSave": true,
+    "[go]": {
+        "editor.formatOnSave": true
+    },
+    "cue.formatTool": "cue fmt",
+    "git.openRepositoryInParentFolders": "never",
+    "yaml.schemas": {
+        "file:///Users/bcraft/.vscode/extensions/atlassian.atlascode-3.0.10/resources/schemas/pipelines-schema.json": "bitbucket-pipelines.yml"
+    },
+    "atlascode.jira.jqlList": [
+        {
+            "id": "ab6ef7bf-b64f-443e-9c26-f582b04d6f25",
+            "enabled": true,
+            "name": "My jira.cs.sys Issues",
+            "query": "assignee = currentUser() AND resolution = Unresolved ORDER BY lastViewed DESC",
+            "siteId": "jira.cs.sys",
+            "monitor": true
+        }
+    ],
+    "atlascode.bitbucket.enabled": true,
+    "redhat.telemetry.enabled": false
+}
