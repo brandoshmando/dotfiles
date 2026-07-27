@@ -49,5 +49,6 @@
       },
       "cue.formatTool": "cue fmt",
       "git.openRepositoryInParentFolders": "never",
-      "redhat.telemetry.enabled": false
+    "redhat.telemetry.enabled": false,
+    "claudeCode.preferredLocation": "panel"
   }

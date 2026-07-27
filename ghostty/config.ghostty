@@ -1,10 +1,10 @@
-theme = "Monokai Pro"
+theme = "Helix Monokai"
 font-family = "Roboto Mono ExtraLight"
 font-thicken = true
 quick-terminal-position = top
 quick-terminal-size = 25%,50%
 quick-terminal-animation-duration = 0.2
-background-opacity = 0.78
-background-blur-radius = 20
+background-opacity = 1
+background-blur-radius = 0
 keybind = global:ctrl+space=toggle_quick_terminal
 copy-on-select = clipboard
