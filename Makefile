@@ -45,10 +45,15 @@ homebrew:
 		echo "Homebrew already installed ($$brew_bin), skipping."; \
 	fi
 
+# Homebrew won't load formulae from third-party taps until they're trusted, and
+# `brew bundle` can't do it itself — so record the trust decision here.
+TRUSTED_FORMULAE := neurosnap/tap/zmx
+
 brew: homebrew
 	@$(FIND_BREW); \
 	if [ -z "$$brew_bin" ]; then echo "Homebrew not found after install"; exit 1; fi; \
 	eval "$$("$$brew_bin" shellenv)"; \
+	brew trust --formula $(TRUSTED_FORMULAE); \
 	brew bundle --file=$(DOTFILES)/Brewfile
 
 # The installer is a bash script; piping it to zsh breaks on `==` (zsh expands
@@ -156,5 +161,6 @@ define backup_and_link
 		echo "Backing up $(2) -> $(2).bak"; \
 		mv "$(2)" "$(2).bak"; \
 	fi; \
+	echo "  link $(2)"; \
 	ln -sf "$(1)" "$(2)"
 endef

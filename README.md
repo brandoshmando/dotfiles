@@ -26,7 +26,7 @@ sitting where a symlink should go, it's moved aside to `<name>.bak` first.
 | --- | --- |
 | `install` | `homebrew` + `brew` + `gvm` + `omz` + `zsh` + `ghostty` + `vscode` + `fonts` + `helix`. The default. |
 | `homebrew` | Installs Homebrew itself if missing. Prompts for a sudo password; do not run under `sudo`. |
-| `brew` | `brew bundle` against the [Brewfile](Brewfile). |
+| `brew` | Trusts the third-party formulae, then `brew bundle` against the [Brewfile](Brewfile). |
 | `gvm` | Installs [gvm](https://github.com/moovweb/gvm) for Go version management. Skipped if `~/.gvm` exists. |
 | `omz` | Installs [oh-my-zsh](https://ohmyz.sh) unattended. Skipped if `~/.oh-my-zsh` exists. |
 | `zsh` | Links `.zshrc` / `.zshenv` and creates `~/.zshrc.local` if absent. |
