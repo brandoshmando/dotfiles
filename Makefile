@@ -51,10 +51,14 @@ brew: homebrew
 	eval "$$("$$brew_bin" shellenv)"; \
 	brew bundle --file=$(DOTFILES)/Brewfile
 
+# The installer is a bash script; piping it to zsh breaks on `==` (zsh expands
+# `=word` and reports "= not found"). GVM_NO_UPDATE_PROFILE keeps it from
+# appending to ~/.zshrc — zsh/zshrc already sources gvm.
 gvm:
 	@if [ ! -d "$(HOME)/.gvm" ]; then \
 		echo "Installing gvm..."; \
-		curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer | zsh; \
+		curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer | GVM_NO_UPDATE_PROFILE=1 bash; \
+		[ -s "$(HOME)/.gvm/scripts/gvm" ] || { echo "gvm install failed"; exit 1; }; \
 	else \
 		echo "gvm already installed, skipping."; \
 	fi
