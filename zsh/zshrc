@@ -11,7 +11,11 @@ source $ZSH/oh-my-zsh.sh
 # --- toolchains ------------------------------------------------------------
 # Everything here is guarded, so a partial install still yields a working shell.
 
-[ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
+# /opt/homebrew on Apple Silicon, /usr/local on Intel.
+for _brew in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+  [ -x "$_brew" ] && eval "$("$_brew" shellenv)" && break
+done
+unset _brew
 
 # ~/.local/bin holds the hx-steel wrapper (see `make helix`). Prepend so it
 # wins over anything system-installed.

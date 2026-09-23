@@ -11,16 +11,36 @@ HELIX_BRANCH := steel-event-system
 HELIX_CONFIG_DIR := $(HOME)/.config/helix
 STEEL_REPO := https://github.com/mattwparas/steel.git
 
+# Homebrew isn't on PATH until its shellenv runs, and on a fresh machine it
+# doesn't exist at all when make starts — so resolve it per recipe rather than
+# once at parse time.
+FIND_BREW = brew_bin=$$(command -v brew 2>/dev/null); \
+	[ -n "$$brew_bin" ] || for p in /opt/homebrew/bin/brew /usr/local/bin/brew; do \
+		[ -x "$$p" ] && brew_bin="$$p" && break; \
+	done
+
 # Prefer the rustup toolchain if present — the helix fork pins a channel in
 # rust-toolchain.toml, which the Homebrew cargo ignores.
 CARGO := $(shell test -x $(HOME)/.cargo/bin/cargo && echo $(HOME)/.cargo/bin/cargo || echo cargo)
 FORGE := $(HOME)/.cargo/bin/forge
 
-.PHONY: install brew gvm omz zsh ghostty vscode fonts helix hx-steel helix-src steel-toolchain helix-build helix-cogs
+.PHONY: install homebrew brew gvm omz zsh ghostty vscode fonts helix hx-steel helix-src steel-toolchain helix-build helix-cogs
 
-install: brew gvm omz zsh ghostty vscode fonts helix
+install: homebrew brew gvm omz zsh ghostty vscode fonts helix
 
-brew:
+homebrew:
+	@$(FIND_BREW); \
+	if [ -z "$$brew_bin" ]; then \
+		echo "Installing Homebrew..."; \
+		NONINTERACTIVE=1 /bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; \
+	else \
+		echo "Homebrew already installed ($$brew_bin), skipping."; \
+	fi
+
+brew: homebrew
+	@$(FIND_BREW); \
+	if [ -z "$$brew_bin" ]; then echo "Homebrew not found after install"; exit 1; fi; \
+	eval "$$("$$brew_bin" shellenv)"; \
 	brew bundle --file=$(DOTFILES)/Brewfile
 
 gvm:
@@ -69,10 +89,12 @@ ghostty:
 	@$(call backup_and_link,$(DOTFILES)/ghostty/themes/Helix Monokai,$(HOME)/.config/ghostty/themes/Helix Monokai)
 
 vscode:
+	mkdir -p "$(VSCODE_DIR)"
 	@$(call backup_and_link,$(DOTFILES)/vscode/settings.json,$(VSCODE_DIR)/settings.json)
 	@$(call backup_and_link,$(DOTFILES)/vscode/keybindings.json,$(VSCODE_DIR)/keybindings.json)
 
 fonts:
+	mkdir -p $(HOME)/Library/Fonts
 	cp -n $(DOTFILES)/fonts/*.ttf $(HOME)/Library/Fonts/ || true
 
 # Links config + the `hx-steel` wrapper. Cheap, so it runs as part of `install`.

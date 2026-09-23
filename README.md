@@ -8,6 +8,10 @@ cd ~/code/misc/dotfiles
 make install
 ```
 
+It works on a bare machine — `homebrew` bootstraps Homebrew if it isn't there
+yet (that step will ask for your sudo password), and every target creates the
+directories it writes into.
+
 `make install` is safe to re-run. Every target links rather than copies, so
 editing a file in this repo takes effect immediately. If a real file is already
 sitting where a symlink should go, it's moved aside to `<name>.bak` first.
@@ -16,7 +20,8 @@ sitting where a symlink should go, it's moved aside to `<name>.bak` first.
 
 | Target | What it does |
 | --- | --- |
-| `install` | `brew` + `gvm` + `omz` + `zsh` + `ghostty` + `vscode` + `fonts` + `helix`. The default. |
+| `install` | `homebrew` + `brew` + `gvm` + `omz` + `zsh` + `ghostty` + `vscode` + `fonts` + `helix`. The default. |
+| `homebrew` | Installs Homebrew itself if missing. Needs sudo. |
 | `brew` | `brew bundle` against the [Brewfile](Brewfile). |
 | `gvm` | Installs [gvm](https://github.com/moovweb/gvm) for Go version management. Skipped if `~/.gvm` exists. |
 | `omz` | Installs [oh-my-zsh](https://ohmyz.sh) unattended. Skipped if `~/.oh-my-zsh` exists. |
