@@ -1,5 +1,13 @@
 SHELL := /bin/zsh
 DOTFILES := $(CURDIR)
+
+# Everything here installs into $HOME, and Homebrew refuses to run as root, so
+# `sudo make install` fails. Run as your normal user: the Homebrew installer
+# asks for a sudo password itself when it needs to create /opt/homebrew.
+ifeq ($(shell id -u),0)
+$(error Do not run make as root. Run `make install` as your normal user; Homebrew will ask for your sudo password when it needs it)
+endif
+
 VSCODE_DIR := $(HOME)/Library/Application Support/Code/User
 LOCAL_BIN := $(HOME)/.local/bin
 
@@ -31,8 +39,8 @@ install: homebrew brew gvm omz zsh ghostty vscode fonts helix
 homebrew:
 	@$(FIND_BREW); \
 	if [ -z "$$brew_bin" ]; then \
-		echo "Installing Homebrew..."; \
-		NONINTERACTIVE=1 /bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; \
+		echo "Installing Homebrew (interactive: it will prompt for your sudo password)..."; \
+		/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; \
 	else \
 		echo "Homebrew already installed ($$brew_bin), skipping."; \
 	fi
