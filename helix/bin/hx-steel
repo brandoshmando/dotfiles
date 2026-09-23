@@ -1,0 +1,7 @@
+#!/bin/sh
+# Steel-enabled helix build (mattwparas fork).
+# `cargo install` puts the binary at ~/.cargo/bin/hx but leaves the runtime
+# (grammars, queries, themes) in the checkout, so point HELIX_RUNTIME at it.
+# Override HELIX_SRC if the fork lives somewhere other than ~/code/rust/helix.
+HELIX_SRC="${HELIX_SRC:-$HOME/code/rust/helix}"
+HELIX_RUNTIME="$HELIX_SRC/runtime" exec "$HOME/.cargo/bin/hx" "$@"

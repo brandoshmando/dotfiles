@@ -1,0 +1,2 @@
+# Managed by github.com/brandoshmando/dotfiles — `make zsh` links this to ~/.zshenv.
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
