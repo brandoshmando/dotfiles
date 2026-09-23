@@ -3,12 +3,11 @@ brew "git"
 brew "gh"
 brew "mercurial"  # required for gvm
 brew "dolt"
-brew "tmux"
 brew "rust"  # cargo, for building the steel-enabled helix fork
 
-# Gastown + beads
-brew "gastown"
-brew "beads"
+# Terminal session attach/detach (zsh/zshrc shows ZMX_SESSION in the prompt)
+tap "neurosnap/tap"
+brew "neurosnap/tap/zmx"
 
 # Casks
 cask "ghostty"
