@@ -4,4 +4,12 @@
 # (grammars, queries, themes) in the checkout, so point HELIX_RUNTIME at it.
 # Override HELIX_SRC if the fork lives somewhere other than ~/code/rust/helix.
 HELIX_SRC="${HELIX_SRC:-$HOME/code/rust/helix}"
-HELIX_RUNTIME="$HELIX_SRC/runtime" exec "$HOME/.cargo/bin/hx" "$@"
+HX="$HOME/.cargo/bin/hx"
+
+if [ ! -x "$HX" ]; then
+	echo "hx-steel: $HX not found — the editor has not been built." >&2
+	echo "Run 'make hx-steel' in the dotfiles repo to build it." >&2
+	exit 127
+fi
+
+HELIX_RUNTIME="$HELIX_SRC/runtime" exec "$HX" "$@"

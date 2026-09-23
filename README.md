@@ -16,6 +16,9 @@ here writes into `$HOME`. Run `make install` as yourself; the Homebrew installer
 prompts for your sudo password on its own when it needs to create
 `/opt/homebrew`. The Makefile aborts if it detects it's running as root.
 
+The first `make install` on a new machine compiles a large Rust workspace for
+the editor; later runs skip the clone and rebuild only what changed.
+
 `make install` is safe to re-run. Every target links rather than copies, so
 editing a file in this repo takes effect immediately. If a real file is already
 sitting where a symlink should go, it's moved aside to `<name>.bak` first.
@@ -24,7 +27,7 @@ sitting where a symlink should go, it's moved aside to `<name>.bak` first.
 
 | Target | What it does |
 | --- | --- |
-| `install` | `homebrew` + `brew` + `gvm` + `omz` + `zsh` + `ghostty` + `vscode` + `fonts` + `helix`. The default. |
+| `install` | Everything: `homebrew`, `brew`, `gvm`, `omz`, `zsh`, `ghostty`, `vscode`, `fonts`, `hx-steel`. The default. |
 | `homebrew` | Installs Homebrew itself if missing. Prompts for a sudo password; do not run under `sudo`. |
 | `brew` | Trusts the third-party formulae, then `brew bundle` against the [Brewfile](Brewfile). |
 | `gvm` | Installs [gvm](https://github.com/moovweb/gvm) for Go version management. Skipped if `~/.gvm` exists. |
@@ -34,7 +37,7 @@ sitting where a symlink should go, it's moved aside to `<name>.bak` first.
 | `vscode` | Links `settings.json` and `keybindings.json`. |
 | `fonts` | Copies the Roboto Mono variants into `~/Library/Fonts`. |
 | `helix` | Links the Helix config and the `hx-steel` wrapper. |
-| `hx-steel` | Builds the Steel-enabled Helix from source. Not part of `install` — see below. |
+| `hx-steel` | Builds the Steel-enabled Helix from source, and links its config. See below. |
 
 ## Layout
 
@@ -74,11 +77,15 @@ Note the target ordering in `install`: `gvm` and `omz` both append to a real
 The editor is [Helix](https://helix-editor.com) built from
 [mattwparas' fork](https://github.com/mattwparas/helix) (`steel-event-system`
 branch), which embeds [Steel](https://github.com/mattwparas/steel) as a plugin
-runtime. It's a source build, not a formula, so it's kept out of `make install`:
+runtime. It's a source build rather than a formula, so `make install` compiles
+it — the first run on a new machine takes a while. To build it on its own:
 
 ```sh
-make hx-steel   # clones, builds, installs plugins. Takes a while.
+make hx-steel   # clones, builds, installs plugins
 ```
+
+`make helix` links the config and the `hx-steel` wrapper without building
+anything, which is useful when you only want to pick up a config change.
 
 That runs four steps in order:
 
