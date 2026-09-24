@@ -17,6 +17,11 @@ HELIX_FORK := https://github.com/mattwparas/helix.git
 HELIX_UPSTREAM := https://github.com/helix-editor/helix.git
 HELIX_BRANCH := steel-event-system
 HELIX_CONFIG_DIR := $(HOME)/.config/helix
+
+# Knowledge base. One directory serves as both the Obsidian vault and
+# basic-memory's default project; zsh/zshrc exports BASIC_MEMORY_HOME to the
+# same path so that project is created here rather than at ~/basic-memory.
+VAULT := $(HOME)/Documents/Obsidian Vault
 STEEL_REPO := https://github.com/mattwparas/steel.git
 
 # Homebrew isn't on PATH until its shellenv runs, and on a fresh machine it
@@ -49,9 +54,9 @@ FIND_CODE = code_bin=""; \
 # cargo install always writes binaries to ~/.cargo/bin, whichever cargo is used.
 FORGE := $(HOME)/.cargo/bin/forge
 
-.PHONY: install homebrew brew gvm omz zsh ghostty vscode fonts helix hx-steel helix-src steel-toolchain helix-build helix-cogs
+.PHONY: install homebrew brew gvm omz zsh obsidian ghostty vscode fonts helix hx-steel helix-src steel-toolchain helix-build helix-cogs
 
-install: homebrew brew gvm omz zsh ghostty vscode fonts hx-steel
+install: homebrew brew gvm omz zsh ghostty vscode fonts obsidian hx-steel
 
 homebrew:
 	@$(FIND_BREW); \
@@ -64,7 +69,7 @@ homebrew:
 
 # Homebrew won't load formulae from third-party taps until they're trusted, and
 # `brew bundle` can't do it itself — so record the trust decision here.
-TRUSTED_FORMULAE := neurosnap/tap/zmx
+TRUSTED_FORMULAE := neurosnap/tap/zmx basicmachines-co/basic-memory/basic-memory
 
 brew: homebrew
 	@$(FIND_BREW); \
@@ -135,6 +140,22 @@ ghostty:
 	@$(call backup_and_link,$(DOTFILES)/ghostty/config.ghostty,$(HOME)/.config/ghostty/config.ghostty)
 	@$(call backup_and_link,$(DOTFILES)/ghostty/themes/Helix Monokai,$(HOME)/.config/ghostty/themes/Helix Monokai)
 
+# Settings only — never vault content. Community plugins aren't tracked (they're
+# large, third-party, and their data.json can hold API keys), so install those
+# from Obsidian's store; community-plugins.json lists which ones.
+obsidian:
+	@pgrep -x Obsidian >/dev/null \
+		&& echo "  warning: Obsidian is running — quit it and re-run, or it may replace these links" \
+		|| true
+	mkdir -p "$(VAULT)/.obsidian/themes"
+	@$(call backup_and_link,$(DOTFILES)/obsidian/app.json,$(VAULT)/.obsidian/app.json)
+	@$(call backup_and_link,$(DOTFILES)/obsidian/appearance.json,$(VAULT)/.obsidian/appearance.json)
+	@$(call backup_and_link,$(DOTFILES)/obsidian/core-plugins.json,$(VAULT)/.obsidian/core-plugins.json)
+	@$(call backup_and_link,$(DOTFILES)/obsidian/community-plugins.json,$(VAULT)/.obsidian/community-plugins.json)
+	@$(call backup_and_link,$(DOTFILES)/obsidian/graph.json,$(VAULT)/.obsidian/graph.json)
+	@$(call backup_and_link,$(DOTFILES)/obsidian/themes/Velocity,$(VAULT)/.obsidian/themes/Velocity)
+	@$(DOTFILES)/obsidian/bin/register-vault "$(VAULT)"
+
 # settings.json names a theme that ships in an extension, so the extensions have
 # to be installed or the settings look like they were ignored.
 vscode:
@@ -203,12 +224,14 @@ helix-cogs: steel-toolchain
 	$(FORGE) pkg install --git https://github.com/brandoshmando/hx-claude-ide.git
 	$(FORGE) pkg install --git https://github.com/mattwparas/steel-pty
 
-# Backs up target if it exists and isn't already the correct symlink, then links
+# Backs up target if it exists and isn't already the correct symlink, then links.
+# -n matters: without it, relinking a symlink that points at a directory follows
+# it and drops the new link *inside* that directory instead of replacing it.
 define backup_and_link
 	if [ -e "$(2)" ] && [ "$$(readlink "$(2)")" != "$(1)" ]; then \
 		echo "Backing up $(2) -> $(2).bak"; \
 		mv "$(2)" "$(2).bak"; \
 	fi; \
 	echo "  link $(2)"; \
-	ln -sf "$(1)" "$(2)"
+	ln -sfn "$(1)" "$(2)"
 endef

@@ -32,6 +32,11 @@ esac
 # Version switching still works manually via: gvm use go1.x.y
 unfunction cd 2>/dev/null
 
+# --- knowledge base --------------------------------------------------------
+# basic-memory creates its default project here, which is also the Obsidian
+# vault (see the obsidian target in the dotfiles Makefile).
+export BASIC_MEMORY_HOME="$HOME/Documents/Obsidian Vault"
+
 # --- prompt ----------------------------------------------------------------
 # zmx session indicator
 if [[ -n $ZMX_SESSION ]]; then

@@ -27,7 +27,7 @@ sitting where a symlink should go, it's moved aside to `<name>.bak` first.
 
 | Target | What it does |
 | --- | --- |
-| `install` | Everything: `homebrew`, `brew`, `gvm`, `omz`, `zsh`, `ghostty`, `vscode`, `fonts`, `hx-steel`. The default. |
+| `install` | Everything: `homebrew`, `brew`, `gvm`, `omz`, `zsh`, `ghostty`, `vscode`, `fonts`, `obsidian`, `hx-steel`. The default. |
 | `homebrew` | Installs Homebrew itself if missing. Prompts for a sudo password; do not run under `sudo`. |
 | `brew` | Trusts the third-party formulae, then `brew bundle` against the [Brewfile](Brewfile). |
 | `gvm` | Installs [gvm](https://github.com/moovweb/gvm) for Go version management. Skipped if `~/.gvm` exists. |
@@ -36,6 +36,7 @@ sitting where a symlink should go, it's moved aside to `<name>.bak` first.
 | `ghostty` | Links the Ghostty config and the `Helix Monokai` theme. |
 | `vscode` | Links `settings.json` / `keybindings.json` and installs the extensions in `extensions.json`. |
 | `fonts` | Copies the Roboto Mono variants into `~/Library/Fonts`. |
+| `obsidian` | Links the vault settings and registers the vault with the app. |
 | `helix` | Links the Helix config and the `hx-steel` wrapper. |
 | `hx-steel` | Builds the Steel-enabled Helix from source, and links its config. See below. |
 
@@ -43,6 +44,7 @@ sitting where a symlink should go, it's moved aside to `<name>.bak` first.
 
 ```
 zsh/       zshrc, zshenv                  -> ~/.zshrc, ~/.zshenv
+obsidian/  vault settings + theme         -> ~/Documents/Obsidian Vault/.obsidian/
 ghostty/   config.ghostty + themes/       -> ~/.config/ghostty/
 helix/     config.toml, *.scm, bin/       -> ~/.config/helix/, ~/.local/bin/
 vscode/    settings, keybindings          -> ~/Library/Application Support/Code/User/
@@ -72,6 +74,40 @@ comment explaining what belongs in it, mode `600`. Fill it in per machine.
 Note the target ordering in `install`: `gvm` and `omz` both append to a real
 `~/.zshrc`, so they run *before* `zsh` swaps it for a symlink into this repo.
 `zshrc` already carries the lines they would add.
+
+## Knowledge base
+
+One directory is both the Obsidian vault and [basic-memory](https://github.com/basicmachines-co/basic-memory)'s
+default project, so notes written by either are visible to the other:
+
+```
+~/Documents/Obsidian Vault
+```
+
+`zsh/zshrc` exports `BASIC_MEMORY_HOME` to that path. basic-memory reads it when
+it first creates `~/.basic-memory/config.json`, so its default project (`main`)
+lands there instead of at `~/basic-memory` — no project juggling needed. Change
+the location in one place, `VAULT` in the [Makefile](Makefile), and keep the
+`BASIC_MEMORY_HOME` export in step with it.
+
+`make obsidian` links the settings and registers the vault with the app, since
+Obsidian tracks its vault list in `~/Library/Application Support/obsidian/`,
+outside the vault itself. **Quit Obsidian first** — a running instance can
+replace the symlinks with regular files when it next writes settings.
+
+Only settings are tracked, never notes. Also deliberately excluded:
+
+- `workspace.json` — per-machine UI layout, and it records the paths of open notes.
+- `plugins/` — ~17MB of third-party code, and a plugin's `data.json` can hold
+  API keys. Reinstall community plugins from Obsidian's store;
+  `community-plugins.json` lists which ones.
+
+The `Velocity` theme *is* tracked, because `appearance.json` names it and
+Obsidian silently falls back to the default theme when a named one is missing.
+
+Two caveats. If `~/.basic-memory/config.json` already exists, `BASIC_MEMORY_HOME`
+won't retroactively move the default project — check with `basic-memory project
+list`. And nothing here syncs note content; that's Obsidian Sync's job.
 
 ## Helix
 

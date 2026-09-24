@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+"""Register a vault directory with the Obsidian app.
+
+Obsidian keeps its vault list in a JSON file outside the vault itself, so
+linking .obsidian/ alone isn't enough — the app won't know the vault exists.
+Merges into the existing registry; a vault already listed is left untouched.
+"""
+import json
+import os
+import secrets
+import sys
+import time
+
+REGISTRY = os.path.expanduser(
+    "~/Library/Application Support/obsidian/obsidian.json"
+)
+
+
+def main() -> int:
+    if len(sys.argv) != 2:
+        print("usage: register-vault <vault-path>", file=sys.stderr)
+        return 2
+    vault = os.path.abspath(os.path.expanduser(sys.argv[1]))
+    if not os.path.isdir(vault):
+        print(f"register-vault: not a directory: {vault}", file=sys.stderr)
+        return 1
+
+    try:
+        with open(REGISTRY) as fh:
+            data = json.load(fh)
+    except FileNotFoundError:
+        data = {}
+    except json.JSONDecodeError as exc:
+        print(f"register-vault: {REGISTRY} is not valid JSON ({exc})", file=sys.stderr)
+        return 1
+
+    vaults = data.setdefault("vaults", {})
+    if any(v.get("path") == vault for v in vaults.values()):
+        print(f"  vault already registered: {vault}")
+        return 0
+
+    vaults[secrets.token_hex(8)] = {
+        "path": vault,
+        "ts": int(time.time() * 1000),
+        "open": True,
+    }
+    os.makedirs(os.path.dirname(REGISTRY), exist_ok=True)
+    tmp = REGISTRY + ".tmp"
+    with open(tmp, "w") as fh:
+        json.dump(data, fh, indent=2)
+    os.replace(tmp, REGISTRY)
+    print(f"  registered vault: {vault}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
