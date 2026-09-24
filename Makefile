@@ -38,6 +38,14 @@ FIND_CARGO = cargo_bin=""; \
 	[ -n "$$cargo_bin" ] || cargo_bin=$$(command -v cargo 2>/dev/null); \
 	[ -n "$$cargo_bin" ] || { echo "cargo not found — is rust installed?"; exit 1; }
 
+# The VS Code cask provides `code`, but it has the same PATH problem as brew.
+FIND_CODE = code_bin=""; \
+	for p in /opt/homebrew/bin/code /usr/local/bin/code \
+			"/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"; do \
+		[ -x "$$p" ] && code_bin="$$p" && break; \
+	done; \
+	[ -n "$$code_bin" ] || code_bin=$$(command -v code 2>/dev/null)
+
 # cargo install always writes binaries to ~/.cargo/bin, whichever cargo is used.
 FORGE := $(HOME)/.cargo/bin/forge
 
@@ -127,10 +135,25 @@ ghostty:
 	@$(call backup_and_link,$(DOTFILES)/ghostty/config.ghostty,$(HOME)/.config/ghostty/config.ghostty)
 	@$(call backup_and_link,$(DOTFILES)/ghostty/themes/Helix Monokai,$(HOME)/.config/ghostty/themes/Helix Monokai)
 
+# settings.json names a theme that ships in an extension, so the extensions have
+# to be installed or the settings look like they were ignored.
 vscode:
 	mkdir -p "$(VSCODE_DIR)"
 	@$(call backup_and_link,$(DOTFILES)/vscode/settings.json,$(VSCODE_DIR)/settings.json)
 	@$(call backup_and_link,$(DOTFILES)/vscode/keybindings.json,$(VSCODE_DIR)/keybindings.json)
+	@$(FIND_CODE); \
+	if [ -z "$$code_bin" ]; then \
+		echo "  note: \`code\` not found — skipping extensions; run 'make vscode' once VS Code is installed"; \
+	else \
+		installed=$$("$$code_bin" --list-extensions 2>/dev/null | tr 'A-Z' 'a-z'); \
+		for ext in $$(grep -oE '"[A-Za-z0-9][A-Za-z0-9_-]*\.[A-Za-z0-9][A-Za-z0-9_-]*"' \
+				$(DOTFILES)/vscode/extensions.json | tr -d '"'); do \
+			if echo "$$installed" | grep -qx "$$(echo $$ext | tr 'A-Z' 'a-z')"; then continue; fi; \
+			echo "  ext $$ext"; \
+			"$$code_bin" --install-extension "$$ext" --force >/dev/null 2>&1 \
+				|| echo "    failed to install $$ext"; \
+		done; \
+	fi
 
 fonts:
 	mkdir -p $(HOME)/Library/Fonts

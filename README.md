@@ -34,7 +34,7 @@ sitting where a symlink should go, it's moved aside to `<name>.bak` first.
 | `omz` | Installs [oh-my-zsh](https://ohmyz.sh) unattended. Skipped if `~/.oh-my-zsh` exists. |
 | `zsh` | Links `.zshrc` / `.zshenv` and creates `~/.zshrc.local` if absent. |
 | `ghostty` | Links the Ghostty config and the `Helix Monokai` theme. |
-| `vscode` | Links `settings.json` and `keybindings.json`. |
+| `vscode` | Links `settings.json` / `keybindings.json` and installs the extensions in `extensions.json`. |
 | `fonts` | Copies the Roboto Mono variants into `~/Library/Fonts`. |
 | `helix` | Links the Helix config and the `hx-steel` wrapper. |
 | `hx-steel` | Builds the Steel-enabled Helix from source, and links its config. See below. |
@@ -46,6 +46,7 @@ zsh/       zshrc, zshenv                  -> ~/.zshrc, ~/.zshenv
 ghostty/   config.ghostty + themes/       -> ~/.config/ghostty/
 helix/     config.toml, *.scm, bin/       -> ~/.config/helix/, ~/.local/bin/
 vscode/    settings, keybindings          -> ~/Library/Application Support/Code/User/
+           extensions.json                -> installed via `code --install-extension`
 fonts/     Roboto Mono ttfs               -> ~/Library/Fonts/
 ```
 
