@@ -12,6 +12,7 @@ brew "neurosnap/tap/zmx"
 # Casks
 cask "ghostty"
 cask "claude-code"
+cask "visual-studio-code"  # also provides the `code` CLI
 
 # Fonts
 cask "font-roboto-mono-nerd-font"
