@@ -140,9 +140,10 @@ ghostty:
 	@$(call backup_and_link,$(DOTFILES)/ghostty/config.ghostty,$(HOME)/.config/ghostty/config.ghostty)
 	@$(call backup_and_link,$(DOTFILES)/ghostty/themes/Helix Monokai,$(HOME)/.config/ghostty/themes/Helix Monokai)
 
-# Settings only — never vault content. Community plugins aren't tracked (they're
-# large, third-party, and their data.json can hold API keys), so install those
-# from Obsidian's store; community-plugins.json lists which ones.
+# Settings only — never vault content. Plugin *code* isn't tracked either (it's
+# large, third-party, and a plugin's data.json can hold API keys); instead the
+# ids in community-plugins.json are resolved against Obsidian's registry and
+# pulled from GitHub, the same thing the in-app browser does.
 obsidian:
 	@pgrep -x Obsidian >/dev/null \
 		&& echo "  warning: Obsidian is running — quit it and re-run, or it may replace these links" \
@@ -155,6 +156,7 @@ obsidian:
 	@$(call backup_and_link,$(DOTFILES)/obsidian/graph.json,$(VAULT)/.obsidian/graph.json)
 	@$(call backup_and_link,$(DOTFILES)/obsidian/themes/Velocity,$(VAULT)/.obsidian/themes/Velocity)
 	@$(DOTFILES)/obsidian/bin/register-vault "$(VAULT)"
+	@$(DOTFILES)/obsidian/bin/install-plugins "$(VAULT)"
 
 # settings.json names a theme that ships in an extension, so the extensions have
 # to be installed or the settings look like they were ignored.

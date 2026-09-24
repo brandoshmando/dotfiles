@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+"""Install the community plugins listed in a vault's community-plugins.json.
+
+Plugin code isn't tracked in this repo — it's bulky, third-party, and a
+plugin's data.json can hold API keys. Instead we resolve each plugin id
+through Obsidian's public registry and pull its latest release straight from
+GitHub, which is what the in-app browser does.
+
+Already-installed plugins are left alone; Obsidian updates them itself.
+"""
+import json
+import os
+import sys
+import urllib.error
+import urllib.request
+
+REGISTRY_URL = (
+    "https://raw.githubusercontent.com/obsidianmd/obsidian-releases"
+    "/master/community-plugins.json"
+)
+ASSET_URL = "https://github.com/{repo}/releases/latest/download/{asset}"
+REQUIRED = ("manifest.json", "main.js")
+OPTIONAL = ("styles.css",)
+
+
+def fetch(url: str) -> bytes:
+    req = urllib.request.Request(url, headers={"User-Agent": "dotfiles-installer"})
+    with urllib.request.urlopen(req, timeout=60) as resp:
+        return resp.read()
+
+
+def main() -> int:
+    if len(sys.argv) != 2:
+        print("usage: install-plugins <vault-path>", file=sys.stderr)
+        return 2
+    vault = os.path.abspath(os.path.expanduser(sys.argv[1]))
+    listing = os.path.join(vault, ".obsidian", "community-plugins.json")
+    try:
+        with open(listing) as fh:
+            wanted = json.load(fh)
+    except FileNotFoundError:
+        print(f"  no {listing}; nothing to install")
+        return 0
+
+    missing = [
+        pid
+        for pid in wanted
+        if not os.path.isfile(
+            os.path.join(vault, ".obsidian", "plugins", pid, "manifest.json")
+        )
+    ]
+    if not missing:
+        print(f"  all {len(wanted)} community plugins already installed")
+        return 0
+
+    try:
+        registry = {p["id"]: p["repo"] for p in json.loads(fetch(REGISTRY_URL))}
+    except (urllib.error.URLError, json.JSONDecodeError, OSError) as exc:
+        print(f"  could not fetch the Obsidian plugin registry: {exc}", file=sys.stderr)
+        return 1
+
+    failed = []
+    for pid in missing:
+        repo = registry.get(pid)
+        if not repo:
+            print(f"  {pid}: not in the community registry, install it by hand")
+            failed.append(pid)
+            continue
+        dest = os.path.join(vault, ".obsidian", "plugins", pid)
+        os.makedirs(dest, exist_ok=True)
+        try:
+            for asset in REQUIRED:
+                data = fetch(ASSET_URL.format(repo=repo, asset=asset))
+                with open(os.path.join(dest, asset), "wb") as fh:
+                    fh.write(data)
+            for asset in OPTIONAL:
+                try:
+                    data = fetch(ASSET_URL.format(repo=repo, asset=asset))
+                except urllib.error.HTTPError:
+                    continue
+                with open(os.path.join(dest, asset), "wb") as fh:
+                    fh.write(data)
+        except (urllib.error.URLError, OSError) as exc:
+            print(f"  {pid}: download failed ({exc})", file=sys.stderr)
+            failed.append(pid)
+            continue
+        with open(os.path.join(dest, "manifest.json")) as fh:
+            version = json.load(fh).get("version", "?")
+        print(f"  plugin {pid} {version} ({repo})")
+
+    if failed:
+        print(f"  {len(failed)} plugin(s) need manual installation: {', '.join(failed)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

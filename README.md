@@ -36,7 +36,7 @@ sitting where a symlink should go, it's moved aside to `<name>.bak` first.
 | `ghostty` | Links the Ghostty config and the `Helix Monokai` theme. |
 | `vscode` | Links `settings.json` / `keybindings.json` and installs the extensions in `extensions.json`. |
 | `fonts` | Copies the Roboto Mono variants into `~/Library/Fonts`. |
-| `obsidian` | Links the vault settings and registers the vault with the app. |
+| `obsidian` | Links vault settings, registers the vault, installs community plugins. |
 | `helix` | Links the Helix config and the `hx-steel` wrapper. |
 | `hx-steel` | Builds the Steel-enabled Helix from source, and links its config. See below. |
 
@@ -98,9 +98,13 @@ replace the symlinks with regular files when it next writes settings.
 Only settings are tracked, never notes. Also deliberately excluded:
 
 - `workspace.json` — per-machine UI layout, and it records the paths of open notes.
-- `plugins/` — ~17MB of third-party code, and a plugin's `data.json` can hold
-  API keys. Reinstall community plugins from Obsidian's store;
-  `community-plugins.json` lists which ones.
+- `plugins/` — third-party code, and a plugin's `data.json` can hold API keys.
+  The plugins still get installed: `make obsidian` reads the ids in
+  `community-plugins.json`, resolves each against Obsidian's public registry,
+  and downloads its latest release from GitHub — the same thing the in-app
+  browser does. Already-installed plugins are left alone, since Obsidian
+  updates them itself. Anything not in the registry (a BRAT/beta plugin, say)
+  is reported for manual installation.
 
 The `Velocity` theme *is* tracked, because `appearance.json` names it and
 Obsidian silently falls back to the default theme when a named one is missing.
