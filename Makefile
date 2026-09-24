@@ -68,14 +68,27 @@ brew: homebrew
 # The installer is a bash script; piping it to zsh breaks on `==` (zsh expands
 # `=word` and reports "= not found"). GVM_NO_UPDATE_PROFILE keeps it from
 # appending to ~/.zshrc — zsh/zshrc already sources gvm.
+#
+# Key off scripts/gvm, not the directory: the installer clones before it can
+# fail, so a dead run leaves ~/.gvm present but unusable. Testing -d there would
+# skip the retry forever.
 gvm:
-	@if [ ! -d "$(HOME)/.gvm" ]; then \
+	@if [ ! -s "$(HOME)/.gvm/scripts/gvm" ]; then \
+		if [ -d "$(HOME)/.gvm" ]; then \
+			if [ -n "$$(ls -A "$(HOME)/.gvm/gos" 2>/dev/null)" ]; then \
+				echo "$(HOME)/.gvm is broken (scripts/gvm missing) but holds installed Go"; \
+				echo "toolchains. Refusing to delete it. Move it aside and re-run."; \
+				exit 1; \
+			fi; \
+			echo "Removing incomplete gvm install at $(HOME)/.gvm"; \
+			rm -rf "$(HOME)/.gvm"; \
+		fi; \
 		echo "Installing gvm..."; \
 		curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer | GVM_NO_UPDATE_PROFILE=1 bash; \
-		[ -s "$(HOME)/.gvm/scripts/gvm" ] || { echo "gvm install failed"; exit 1; }; \
 	else \
 		echo "gvm already installed, skipping."; \
 	fi
+	@[ -s "$(HOME)/.gvm/scripts/gvm" ] || { echo "gvm install failed: $(HOME)/.gvm/scripts/gvm missing"; exit 1; }
 
 omz:
 	@if [ ! -d "$(HOME)/.oh-my-zsh" ]; then \
